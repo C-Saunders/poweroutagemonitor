@@ -5,6 +5,7 @@ const alertAfter = 10e3
 const checkInterval = 2e3
 
 let lastHeartbeat = new Date()
+let lastHeartbeatBeforeOutage
 let haveAlerted = false
 
 const requestHandler = (request, response) => {
@@ -14,11 +15,14 @@ const requestHandler = (request, response) => {
 
 const server = http.createServer(requestHandler)
 
-const sendDownAlert = () => console.log(`Outage! Last heartbeat: ${lastHeartbeat.toISOString()}`)
-const sendUpAlert = () => console.log(`Recovery detected at ${new Date().toISOString()}`)
+const sendDownAlert = () => console.log(`Outage! Last heartbeat: ${lastHeartbeat.toUTCString()}`)
+const sendUpAlert = () => {
+  console.log(`Recovery detected at ${new Date().toUTCString()}. Downtime: ${(Date.now() - lastHeartbeatBeforeOutage.getTime()) / 1e3} minutes`)
+}
 
 const doStatusCheck = () => {
   const timeSinceLastHeartBeat = new Date() - lastHeartbeat
+  lastHeartbeatBeforeOutage = lastHeartbeat
 
   if (timeSinceLastHeartBeat > alertAfter && !haveAlerted) {
     sendDownAlert()
