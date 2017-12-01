@@ -1,0 +1,15 @@
+{
+  "name": "outage-monitor",
+  "version": "0.0.1",
+  "description": "Sends an alert if the last message received was too long ago.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "outage",
+    "heartbeat"
+  ],
+  "author": "Charlie Saunders",
+  "license": "MIT"
+}
