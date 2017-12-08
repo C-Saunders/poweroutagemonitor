@@ -11,5 +11,10 @@
     "heartbeat"
   ],
   "author": "Charlie Saunders",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "mailgun-js": "^0.13.1"
+  },
+  "devDependencies": {}
 }
