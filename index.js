@@ -7,7 +7,7 @@ const mailgunDomain = process.env.MAILGUN_DOMAIN
 const mailgun = require('mailgun-js')({ apiKey: api_key, domain: mailgunDomain })
 
 const log = console.log
-const port = 80
+const port = 8080
 
 const alertAfter = 120e3
 const checkInterval = 30e3
