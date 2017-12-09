@@ -7,10 +7,10 @@ const mailgunDomain = process.env.MAILGUN_DOMAIN
 const mailgun = require('mailgun-js')({ apiKey: api_key, domain: mailgunDomain })
 
 const log = console.log
-const port = 3000
+const port = 80
 
-const alertAfter = 10e3
-const checkInterval = 2e3
+const alertAfter = 120e3
+const checkInterval = 30e3
 
 let lastHeartbeat = new Date()
 let lastHeartbeatBeforeOutage
@@ -75,10 +75,10 @@ const doStatusCheck = () => {
 
 server.listen(port, (err) => {
   if (err) {
-    return console.log('something bad happened', err)
+    return log('something bad happened', err)
   }
 
-  console.log(`server is listening on ${port}`)
+  log(`server is listening on ${port}`)
 })
 
 setInterval(doStatusCheck, checkInterval)
