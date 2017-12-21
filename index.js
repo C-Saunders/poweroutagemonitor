@@ -11,6 +11,7 @@ const port = 8080
 
 const alertAfter = 120e3
 const checkInterval = 30e3
+const millisecondsPerMinute = 1e3 * 60
 
 let lastHeartbeat = new Date()
 let lastHeartbeatBeforeOutage
@@ -49,7 +50,7 @@ const sendDownAlert = () => {
 }
 
 const sendUpAlert = () => {
-  const message = `Recovery detected at ${new Date().toUTCString()}. Downtime: ${(Date.now() - lastHeartbeatBeforeOutage.getTime()) / 1e3} minutes`
+  const message = `Recovery detected at ${new Date().toUTCString()}. Downtime: ${(Date.now() - lastHeartbeatBeforeOutage.getTime()) / millisecondsPerMinute} minutes`
   log(message)
   sendEmail({
     subject: 'Outage Recovery',
