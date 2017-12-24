@@ -11,7 +11,7 @@ const port = 8080
 
 const alertAfter = 120e3
 const checkInterval = 30e3
-const millisecondsPerMinute = 1e3 * 60
+const millisecondsPerMinute = 60e3
 
 let lastHeartbeat = new Date()
 let lastHeartbeatBeforeOutage
@@ -59,7 +59,7 @@ const sendUpAlert = () => {
 }
 
 const doStatusCheck = () => {
-  const timeSinceLastHeartBeat = new Date() - lastHeartbeat
+  const timeSinceLastHeartBeat = Date.now() - lastHeartbeat.getTime()
   lastHeartbeatBeforeOutage = lastHeartbeat
 
   if (timeSinceLastHeartBeat > alertAfter && !haveAlerted) {
