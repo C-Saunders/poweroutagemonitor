@@ -1,51 +1,22 @@
 const http = require('http')
-require('dotenv').config()
-const sendFrom = process.env.SEND_EMAIL_FROM
-const recipients = process.env.RECIPIENTS
-const api_key = process.env.MAILGUN_API_KEY
-const mailgunDomain = process.env.MAILGUN_DOMAIN
-const mailgun = require('mailgun-js')({ apiKey: api_key, domain: mailgunDomain })
+const { log, sendEmail, getFormattedDate } = require('./helpers')
 
-const log = console.log
 const port = 8080
-
 const alertAfter = 120e3
 const checkInterval = 30e3
 const millisecondsPerMinute = 60e3
 
-let lastHeartbeat = new Date()
+let lastHeartbeat = Date.now()
 let lastHeartbeatBeforeOutage
 let haveAlerted = false
 
 const requestHandler = (request, response) => {
-  lastHeartbeat = new Date()
+  lastHeartbeat = Date.now()
   response.end('OK')
 }
 
-const server = http.createServer(requestHandler)
-
-const sendEmail = ({subject, text}) => {
-  if (process.env.DEVELOPMENT) {
-    return
-  }
-
-  const data = {
-    from: `Outage Notifier <${sendFrom}>`,
-    to: recipients,
-    subject,
-    text
-  }
-
-  mailgun.messages().send(data, (error, body) => {
-    log(`Response from Mailgun: ${JSON.stringify(body)}`)
-    if (error) {
-      log(`Error response from Mailgun: ${JSON.stringify(error)}`)
-    }
-  })
-}
-
 const sendDownAlert = () => {
-  const message = `Outage! Last heartbeat: ${lastHeartbeat.toUTCString()}`
+  const message = `Outage! Last heartbeat: ${getFormattedDate(lastHeartbeat)}`
   log(message)
   sendEmail({
     subject: 'Outage Detected',
@@ -54,7 +25,8 @@ const sendDownAlert = () => {
 }
 
 const sendUpAlert = () => {
-  const message = `Recovery detected at ${new Date().toUTCString()}. Downtime: ${(Date.now() - lastHeartbeatBeforeOutage.getTime()) / millisecondsPerMinute} minutes`
+  const downtime = (Date.now() - lastHeartbeatBeforeOutage) / millisecondsPerMinute
+  const message = `Recovery detected at ${getFormattedDate(Date.now())}. Downtime: ${downtime.toFixed(2)} minutes`
   log(message)
   sendEmail({
     subject: 'Outage Recovery',
@@ -63,7 +35,7 @@ const sendUpAlert = () => {
 }
 
 const doStatusCheck = () => {
-  const timeSinceLastHeartBeat = Date.now() - lastHeartbeat.getTime()
+  const timeSinceLastHeartBeat = Date.now() - lastHeartbeat
 
   if (timeSinceLastHeartBeat > alertAfter && !haveAlerted) {
     lastHeartbeatBeforeOutage = lastHeartbeat
@@ -77,6 +49,8 @@ const doStatusCheck = () => {
     haveAlerted = false
   }
 }
+
+const server = http.createServer(requestHandler)
 
 server.listen(port, (err) => {
   if (err) {
