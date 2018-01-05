@@ -25,6 +25,10 @@ const requestHandler = (request, response) => {
 const server = http.createServer(requestHandler)
 
 const sendEmail = ({subject, text}) => {
+  if (process.env.DEVELOPMENT) {
+    return
+  }
+
   const data = {
     from: `Outage Notifier <${sendFrom}>`,
     to: recipients,
