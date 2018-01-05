@@ -16,7 +16,7 @@ function log (message) {
 }
 
 function sendEmail ({ subject, text }) {
-  if (process.env.DEVELOPMENT) {
+  if (process.env.DEVELOPMENT === 'true') {
     return
   }
 
