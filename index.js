@@ -60,9 +60,9 @@ const sendUpAlert = () => {
 
 const doStatusCheck = () => {
   const timeSinceLastHeartBeat = Date.now() - lastHeartbeat.getTime()
-  lastHeartbeatBeforeOutage = lastHeartbeat
 
   if (timeSinceLastHeartBeat > alertAfter && !haveAlerted) {
+    lastHeartbeatBeforeOutage = lastHeartbeat
     sendDownAlert()
     haveAlerted = true
   } else if (timeSinceLastHeartBeat <= alertAfter) {
