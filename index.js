@@ -26,7 +26,7 @@ const sendDownAlert = () => {
 
 const sendUpAlert = () => {
   const downtime = (Date.now() - lastHeartbeatBeforeOutage) / millisecondsPerMinute
-  const message = `Recovery detected at ${getFormattedDate(Date.now())}. Downtime: ${downtime.toFixed(2)} minutes`
+  const message = `Recovery detected at ${getFormattedDate(Date.now())}. Approximate downtime: ${Math.round(downtime)} minutes`
   log(message)
   sendEmail({
     subject: 'Outage Recovery',
