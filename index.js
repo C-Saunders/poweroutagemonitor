@@ -8,11 +8,21 @@ const millisecondsPerMinute = 60e3
 
 let lastHeartbeat = Date.now()
 let lastHeartbeatBeforeOutage
-let haveAlerted = false
+let isDown = false
 
 const requestHandler = (request, response) => {
-  lastHeartbeat = Date.now()
-  response.end('OK')
+  switch (request.url) {
+    case '/':
+      lastHeartbeat = Date.now()
+      response.end('OK')
+      break;
+    case '/status':
+      response.end(isDown ? 'DOWN' : 'UP')
+      break;
+    default:
+      response.statusCode = 404
+      response.end('PAGE NOT FOUND')
+  }
 }
 
 const sendDownAlert = () => {
@@ -37,16 +47,16 @@ const sendUpAlert = () => {
 const doStatusCheck = () => {
   const timeSinceLastHeartBeat = Date.now() - lastHeartbeat
 
-  if (timeSinceLastHeartBeat > alertAfter && !haveAlerted) {
+  if (timeSinceLastHeartBeat > alertAfter && !isDown) {
     lastHeartbeatBeforeOutage = lastHeartbeat
     sendDownAlert()
-    haveAlerted = true
+    isDown = true
   } else if (timeSinceLastHeartBeat <= alertAfter) {
-    if (haveAlerted) {
+    if (isDown) {
       sendUpAlert()
     }
 
-    haveAlerted = false
+    isDown = false
   }
 }
 
