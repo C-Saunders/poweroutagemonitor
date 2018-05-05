@@ -15,10 +15,13 @@ const requestHandler = (request, response) => {
     case '/':
       lastHeartbeat = Date.now()
       response.end('OK')
-      break;
+      break
     case '/status':
       response.end(isDown ? 'DOWN' : 'UP')
-      break;
+      break
+    case '/robots.txt':
+      response.end('User-agent: *\nDisallow: /')
+      break
     default:
       response.statusCode = 404
       response.end('PAGE NOT FOUND')
