@@ -15,8 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^4.0.0",
-    "mailgun-js": "^0.13.1",
-    "moment-timezone": "^0.5.14"
+    "mailgun-js": "^0.22.0",
+    "moment-timezone": "^0.5.23"
   },
   "devDependencies": {}
 }
