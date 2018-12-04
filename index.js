@@ -12,7 +12,7 @@ let isDown = false
 
 const requestHandler = (request, response) => {
   switch (request.url) {
-    case '/':
+    case '/heartbeat':
       lastHeartbeat = Date.now()
       response.end('OK')
       break
