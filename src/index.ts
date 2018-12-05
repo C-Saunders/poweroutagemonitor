@@ -45,7 +45,7 @@ function doStatusCheck (): void {
   }
 }
 
-function requestHandler(request: http.IncomingMessage, response: http.ServerResponse): void {
+function requestHandler (request: http.IncomingMessage, response: http.ServerResponse): void {
   switch (request.url) {
     case '/heartbeat':
       lastHeartbeat = Date.now()
