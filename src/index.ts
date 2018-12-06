@@ -1,17 +1,35 @@
 import * as http from 'http'
-import { log, sendEmail, getFormattedDate } from './helpers'
+import {
+  log,
+  sendEmail,
+  getHeartbeatMessage,
+  isDevelopment
+} from './helpers'
 
 const port = 8080
-const alertAfter = 120e3
-const checkInterval = 30e3
+const alertAfter = isDevelopment() ? 10e3 : 120e3
+const checkInterval = isDevelopment() ? 1e3 : 30e3
 const millisecondsPerMinute = 60e3
+const UNKNOWN_IP = 'UNKNOWN IP'
 
-let lastHeartbeat = Date.now()
-let lastHeartbeatBeforeOutage: number
+interface Heartbeat {
+  ip: String,
+  time: number
+}
+
+export {
+  Heartbeat
+}
+
+let lastHeartbeat: Heartbeat = {
+  ip: UNKNOWN_IP,
+  time: Date.now()
+}
+let lastHeartbeatBeforeOutage: Heartbeat
 let isDown = false
 
 function sendDownAlert (): void {
-  const message = `Outage! Last heartbeat: ${getFormattedDate(lastHeartbeat)}`
+  const message = `Outage - last heartbeat: ${getHeartbeatMessage(lastHeartbeat)}`
   log(message)
   sendEmail({
     subject: 'Outage Detected',
@@ -20,8 +38,8 @@ function sendDownAlert (): void {
 }
 
 function sendUpAlert (): void {
-  const downtime = (Date.now() - lastHeartbeatBeforeOutage) / millisecondsPerMinute
-  const message = `Recovery detected at ${getFormattedDate(Date.now())}. Approximate downtime: ${Math.round(downtime)} minutes`
+  const downtime = (Date.now() - lastHeartbeatBeforeOutage.time) / millisecondsPerMinute
+  const message = `Recovery detected. Heartbeat at ${getHeartbeatMessage(lastHeartbeat)}.\n\nApproximate downtime: ${Math.round(downtime)} minutes.`
   log(message)
   sendEmail({
     subject: 'Outage Recovery',
@@ -30,10 +48,10 @@ function sendUpAlert (): void {
 }
 
 function doStatusCheck (): void {
-  const timeSinceLastHeartBeat = Date.now() - lastHeartbeat
+  const timeSinceLastHeartBeat = Date.now() - lastHeartbeat.time
 
   if (timeSinceLastHeartBeat > alertAfter && !isDown) {
-    lastHeartbeatBeforeOutage = lastHeartbeat
+    lastHeartbeatBeforeOutage = Object.assign({}, lastHeartbeat)
     sendDownAlert()
     isDown = true
   } else if (timeSinceLastHeartBeat <= alertAfter) {
@@ -48,7 +66,10 @@ function doStatusCheck (): void {
 function requestHandler (request: http.IncomingMessage, response: http.ServerResponse): void {
   switch (request.url) {
     case '/heartbeat':
-      lastHeartbeat = Date.now()
+      lastHeartbeat = {
+        ip: request.connection.remoteAddress || UNKNOWN_IP,
+        time: Date.now()
+      }
       response.end('OK')
       break
     case '/status':
