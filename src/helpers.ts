@@ -1,3 +1,4 @@
+import { Heartbeat } from './index'
 const momentTz = require('moment-timezone').tz
 
 require('dotenv').config()
@@ -8,7 +9,8 @@ const mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_API_KEY, dom
 export {
   log,
   sendEmail,
-  getFormattedDate
+  getHeartbeatMessage,
+  isDevelopment
 }
 
 function log (message: String, error?: Error): void {
@@ -19,8 +21,12 @@ function log (message: String, error?: Error): void {
   }
 }
 
+function isDevelopment (): boolean {
+  return process.env.DEVELOPMENT === 'true'
+}
+
 function sendEmail ({ subject, text }: { subject: String, text: String }) {
-  if (process.env.DEVELOPMENT === 'true') {
+  if (isDevelopment()) {
     return
   }
 
@@ -37,6 +43,10 @@ function sendEmail ({ subject, text }: { subject: String, text: String }) {
       log(`Error response from Mailgun: ${JSON.stringify(error)}`)
     }
   })
+}
+
+function getHeartbeatMessage (heartbeat: Heartbeat) {
+  return `${getFormattedDate(heartbeat.time)} from ${heartbeat.ip}`
 }
 
 function getFormattedDate (unixTimestamp: number) {
