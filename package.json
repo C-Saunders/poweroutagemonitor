@@ -4,8 +4,11 @@
   "description": "Sends an alert if the last message received was too long ago.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p tsconfig.json",
+    "lint": "standard **/*.ts --fix",
+    "prestart": "npm run build"
   },
   "keywords": [
     "outage",
@@ -18,5 +21,18 @@
     "mailgun-js": "^0.22.0",
     "moment-timezone": "^0.5.23"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/node": "^10.12.12",
+    "eslint": "^5.9.0",
+    "eslint-plugin-typescript": "^0.14.0",
+    "standard": "^12.0.1",
+    "typescript": "^3.2.1",
+    "typescript-eslint-parser": "^21.0.2"
+  },
+  "standard": {
+    "parser": "typescript-eslint-parser",
+    "plugins": [
+      "typescript"
+    ]
+  }
 }
