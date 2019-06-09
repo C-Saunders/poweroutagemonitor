@@ -7,8 +7,13 @@ import {
 } from './helpers'
 
 const port = 8080
-const alertAfter = isDevelopment() ? 10e3 : 120e3
-const checkInterval = isDevelopment() ? 1e3 : 30e3
+const ONE_SECOND = 1e3
+const TEN_SECONDS = 10e3
+const THIRTY_SECONDS = 30e3
+const THREE_MINUTES = 180e3
+
+const alertAfter = isDevelopment() ? TEN_SECONDS : THREE_MINUTES
+const checkInterval = isDevelopment() ? ONE_SECOND : THIRTY_SECONDS
 const millisecondsPerMinute = 60e3
 const UNKNOWN_IP = 'UNKNOWN IP'
 
