@@ -23,7 +23,7 @@
   "dependencies": {
     "dotenv": "^4.0.0",
     "mailgun-js": "^0.22.0",
-    "moment-timezone": "^0.5.23"
+    "moment-timezone": "^0.5.35"
   },
   "devDependencies": {
     "@types/node": "^10.12.12",
